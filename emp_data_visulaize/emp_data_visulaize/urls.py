@@ -16,25 +16,30 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework.authtoken.views import obtain_auth_token
-# from drf_yasg.views import get_schema_view
-# from drf_yasg import openapi
+from rest_framework_simplejwt import views as jwt_views
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 from rest_framework import permissions
 
-# schema_view = get_schema_view(
-#    openapi.Info(
-#       title="Employee API",
-#       default_version='v1',
-#       description="Test description",
-#    ),
-#    public=True,
-#    permission_classes=(permissions.AllowAny,),
-# )
+schema_view = get_schema_view(
+    openapi.Info(
+        title="employee API",
+        default_version='v1',
+        description="API for Employee Management with JWT auth",
+        contact=openapi.Contact(email="you@example.com"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+    authentication_classes=[],  # Let Swagger be public, even if API is protected
+)
 
 
 urlpatterns = [
+
     path('admin/', admin.site.urls),
-    path('api/', include('core.urls')),
-    path('api-token-auth/', obtain_auth_token),
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('api/', include('employee.urls')),
+    path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0),  name='schema-swagger-ui'),
+
 ]
